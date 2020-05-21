@@ -1,0 +1,33 @@
+import firebaseConfig from '../../config/authentication/Firebase'
+import { loginEvent, loginEventSuccess, loginEventFailure, logoutEventFailure, logoutEventSuccess } from './Actions';
+import { ThunkAction } from 'redux-thunk';
+import { Action } from 'redux';
+import IUserState from '../../models/auth/IUserState';
+
+
+export const loginUser = (email: string, password: string, remember: boolean): ThunkAction<void, IUserState, null, Action<string>> => async (dispatch) => {
+    dispatch(loginEvent());
+    await firebaseConfig.auth().setPersistence(remember ? firebaseConfig.auth.Auth.Persistence.LOCAL : firebaseConfig.auth.Auth.Persistence.SESSION);
+    firebaseConfig
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(user => {
+            dispatch(loginEventSuccess(user));
+        })
+        .catch(error => {
+            dispatch(loginEventFailure(error));
+        });
+};
+
+export const logoutUser = (): ThunkAction<void, IUserState, null, Action<string>> => async (dispatch) => {
+    dispatch(logoutUser());
+    firebaseConfig
+        .auth()
+        .signOut()
+        .then(() => {
+            dispatch(logoutEventSuccess());
+        })
+        .catch(error => {
+            dispatch(logoutEventFailure(error));
+        });
+};
