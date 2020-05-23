@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from "react-router-dom";
 import StyledFilledChipButton from '../../components/StyledFilledChipButton';
 import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
@@ -24,10 +25,6 @@ class Login extends Component<ILoginPageProps> {
         },
         remember: {
             value: true
-        },
-        errorNotifier: {
-            show: false,
-            message: ''
         }
     };
 
@@ -36,13 +33,9 @@ class Login extends Component<ILoginPageProps> {
         this.checkSignInStatus(props.authentication, props.history)
     }
 
-    componentWillReceiveProps(props: ILoginPageProps) {
-        this.checkSignInStatus(props.authentication, props.history)
-    }
-
     checkSignInStatus(authentication: IUserState, history: any) {
         if (authentication.isAuthenticated) history.push('/')
-        if (authentication.err) this.setState({
+        if (authentication.err && authentication.err.message) this.setState({
             ...this.state,
             errorNotifier: { show: true, message: authentication.err.message }
         })
@@ -87,75 +80,85 @@ class Login extends Component<ILoginPageProps> {
     formValidator = () => !(this.state.email.isValid && this.state.password.value !== '')
 
     render() {
-        return (
-            <form>
-                <Grid
-                    container
-                    spacing={3}
-                    direction='column'
-                    alignItems='center'
-                    justify='center'
-                    style={{ minHeight: '70vh' }}>
-                    <Grid item xs={12}>
-                        <img src={logo} className="App-logo" alt="logo" />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            style={{ width: 250 }}
-                            id="user-email"
-                            label="Email"
-                            error={!this.state.email.isValid && this.state.email.isTouched}
-                            helperText={this.state.email.helperText}
-                            onChange={this.emailChangeHandler}
-                            onBlur={this.emailValidator}
-                            variant="outlined" />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            style={{ width: 250 }}
-                            id="user-password"
-                            label="Password"
-                            variant="outlined"
-                            type={this.state.password.show ? "text" : "password"}
-                            onChange={this.passwordChangeHandler}
-                            InputProps={{
-                                endAdornment:
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={this.passwordViewChangeHandler}
-                                            onMouseDown={(e) => e.preventDefault()}>
-                                            {this.state.password.show ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                            }} />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <FormControlLabel
-                            value="checked"
-                            checked={this.state.remember.value}
-                            control={<Checkbox color="primary" />}
-                            label="Remember me!"
-                            onClick={this.rememberMeChangeHandler}
-                            labelPlacement="end"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <StyledFilledChipButton
-                            disabled={this.formValidator()}
-                            background={'#001a33'}
-                            title={'Sign in'}
-                            onClick={() => {
-                                this.props.login(this.state.email.value, this.state.password.value, true)
-                            }} />
-                    </Grid>
-                    {this.state.errorNotifier.show && <Grid item xs={12}>
-                        <MuiAlert elevation={3} variant="filled" severity="error" > {this.state.errorNotifier.message}</MuiAlert>
-                    </Grid>}
-                </Grid >
+        if (this.props.authentication.isAuthenticated) {
+            return <Redirect to={'/'} />
+        }
+        else {
+            return (
+                <form>
+                    <Grid
+                        container
+                        spacing={3}
+                        direction='column'
+                        alignItems='center'
+                        justify='center'
+                        style={{ minHeight: '70vh' }}>
+                        <Grid item xs={12}>
+                            <img src={logo} className="App-logo" alt="logo" />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                style={{ width: 250 }}
+                                id="user-email"
+                                label="Email"
+                                error={!this.state.email.isValid && this.state.email.isTouched}
+                                helperText={this.state.email.helperText}
+                                onChange={this.emailChangeHandler}
+                                onBlur={this.emailValidator}
+                                variant="outlined" />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                style={{ width: 250 }}
+                                id="user-password"
+                                label="Password"
+                                variant="outlined"
+                                type={this.state.password.show ? "text" : "password"}
+                                onChange={this.passwordChangeHandler}
+                                InputProps={{
+                                    endAdornment:
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={this.passwordViewChangeHandler}
+                                                onMouseDown={(e) => e.preventDefault()}>
+                                                {this.state.password.show ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                }} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControlLabel
+                                value="checked"
+                                checked={this.state.remember.value}
+                                control={<Checkbox color="primary" />}
+                                label="Remember me!"
+                                onClick={this.rememberMeChangeHandler}
+                                labelPlacement="end"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <StyledFilledChipButton
+                                disabled={this.formValidator()}
+                                background={'#001a33'}
+                                title={'Sign in'}
+                                onClick={() => {
+                                    this.props.login(this.state.email.value, this.state.password.value, true)
+                                }} />
+                        </Grid>
+                        {this.props.authentication.err && this.props.authentication.err.message && <Grid item xs={12}>
+                            <MuiAlert
+                                elevation={3}
+                                variant="filled"
+                                severity="error" >
+                                {this.props.authentication.err?.message}
+                            </MuiAlert>
+                        </Grid>}
+                    </Grid >
 
-            </form>
-        );
+                </form>
+            );
+        }
     }
 }
 
