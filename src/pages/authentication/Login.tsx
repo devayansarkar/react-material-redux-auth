@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from "react-router-dom";
 import StyledFilledChipButton from '../../components/StyledFilledChipButton';
 import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 import Grid from '@material-ui/core/Grid';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -146,17 +147,27 @@ class Login extends Component<ILoginPageProps> {
                                     this.props.login(this.state.email.value, this.state.password.value, true)
                                 }} />
                         </Grid>
-                        {this.props.authentication.err && this.props.authentication.err.message && <Grid item xs={12}>
-                            <MuiAlert
-                                elevation={3}
-                                variant="filled"
-                                severity="error" >
-                                {this.props.authentication.err?.message}
-                            </MuiAlert>
-                        </Grid>}
                     </Grid >
-
-                </form>
+                    {
+                        /**
+                         * 
+                         * Below code issues a warning when used in Strict mode.
+                         * 
+                         * Once the API is fixed, this needs to be updated.
+                         * 
+                         * It is a warning, no functionality is affected.
+                         * 
+                         */
+                    }
+                    {this.props.authentication.err && this.props.authentication.err.message && <Snackbar open={true} autoHideDuration={3000} >
+                        <MuiAlert
+                            elevation={3}
+                            variant="filled"
+                            severity="error" >
+                            {this.props.authentication.err?.message}
+                        </MuiAlert>
+                    </Snackbar>}
+                </form >
             );
         }
     }
