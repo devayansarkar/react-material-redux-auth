@@ -1,5 +1,5 @@
 import firebaseConfig from '../../config/authentication/Firebase'
-import { loginEvent, loginEventSuccess, loginEventFailure, logoutEventFailure, logoutEventSuccess } from './Actions';
+import { loginEvent, loginEventSuccess, loginEventFailure, logoutEventFailure, logoutEventSuccess, verifyEvent, verifyEventSuccess } from './Actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
 import IUserState from '../../models/auth/IUserState';
@@ -29,5 +29,16 @@ export const logoutUser = (): ThunkAction<void, IUserState, null, Action<string>
         })
         .catch(error => {
             dispatch(logoutEventFailure(error));
+        });
+};
+
+export const verifyUserAuthenticationSession = (): ThunkAction<void, IUserState, null, Action<string>> => async (dispatch) => {
+    dispatch(verifyEvent());
+    firebaseConfig
+        .auth()
+        .onAuthStateChanged(user => {
+            if (user) {
+                dispatch(verifyEventSuccess({ isAuthenticated: true, userInfo: user }));
+            }
         });
 };
