@@ -19,10 +19,10 @@ axiosInstance.interceptors.response.use(function (response) {
 });
 
 export const addToken = (token: string) => {
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
+    axiosInstance.defaults.headers.common.authorization = `Bearer ${token}`;
 }
 
 export const removeToken = () => {
-    delete axios.defaults.headers.common.authorization;
+    delete axiosInstance.defaults.headers.common.authorization;
 }
 export default axiosInstance;
