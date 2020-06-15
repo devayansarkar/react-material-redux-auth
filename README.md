@@ -6,9 +6,20 @@ Project created with `npx create-react-app --template typescript`.
 > Add Firebase api keys and credentials from firebase console to use Firebase auth
 
 
+## Features
+- Authentication with `Firebase`
+- `HttpInterceptors` to pass tokens to backend for validation
+- `MaterialUI` or design components
+
+> To use `proxy` add the following in `package.json` in `root`
+```json
+{
+    "proxy": "http://localhost:8080",
+}
+```
+
 ## Folder structure
 ```bash
-.
 ├── LICENSE
 ├── README.md
 ├── package-lock.json
@@ -28,6 +39,8 @@ Project created with `npx create-react-app --template typescript`.
 │   ├── config
 │   │   ├── authentication
 │   │   │   └── Firebase.ts
+│   │   ├── http
+│   │   │   └── HttpInterceptor.ts
 │   │   ├── navigation
 │   │   │   └── History.ts
 │   │   ├── security
