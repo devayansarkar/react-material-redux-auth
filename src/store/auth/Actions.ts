@@ -4,7 +4,7 @@ export const loginEvent = (): LoginEvent => ({
     type: LOGIN_EVENT
 });
 
-export const loginEventSuccess = (user: any): LoginEventSuccess => ({
+export const loginEventSuccess = (user: firebase.User): LoginEventSuccess => ({
     type: LOGIN_EVENT_SUCCESS,
     payload: user
 })
@@ -31,7 +31,7 @@ export const verifyEvent = (): VerifyEvent => ({
     type: VERIFY_EVENT
 })
 
-export const verifyEventSuccess = (user: any): VerifyEventSuccess => ({
+export const verifyEventSuccess = (user:firebase.User): VerifyEventSuccess => ({
     type: VERIFY_EVENT_SUCCESS,
     payload: user
 })

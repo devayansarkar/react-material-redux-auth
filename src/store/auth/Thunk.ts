@@ -12,7 +12,8 @@ export const loginUser = (email: string, password: string, remember: boolean): T
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(user => {
-            dispatch(loginEventSuccess(user));
+            if (user && user.user) dispatch(loginEventSuccess(user.user));
+            else dispatch(loginEventFailure({ message: 'No user details found' }));
         })
         .catch(error => {
             dispatch(loginEventFailure(error));
@@ -38,7 +39,7 @@ export const verifyUserAuthenticationSession = (): ThunkAction<void, IUserState,
         .auth()
         .onAuthStateChanged(user => {
             if (user) {
-                dispatch(verifyEventSuccess({ isAuthenticated: true, userInfo: user }));
+                dispatch(verifyEventSuccess(user));
             }
         });
 };

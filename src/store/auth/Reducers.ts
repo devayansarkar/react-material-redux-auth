@@ -7,11 +7,13 @@ import {
     LOGOUT_EVENT_FAILURE,
     VERIFY_EVENT,
     VERIFY_EVENT_SUCCESS,
-    AuthenticationActionTypes
+    AuthenticationActionTypes,
 } from './Events';
 import authState from './AuthState';
 import IUserState from '../../models/auth/IUserState';
-import { mapToUserState } from '../../utilites/auth/FirebaseToAppStateMapper'
+import { mapToUserState } from '../../utilites/auth/FirebaseToAppStateMapper';
+import { addToken, removeToken } from '../../config/http/HttpInterceptor';
+import { User } from 'firebase';
 export default (
     state = authState,
     action: AuthenticationActionTypes
@@ -24,6 +26,7 @@ export default (
                 event: LOGIN_EVENT
             };
         case LOGIN_EVENT_SUCCESS:
+            addTokenToHttpHeader(action.payload);
             return {
                 ...state,
                 isLoading: false,
@@ -40,6 +43,7 @@ export default (
                 event: LOGIN_EVENT_FAILURE
             };
         case LOGOUT_EVENT:
+            removeToken()
             return {
                 ...state,
                 isLoading: true,
@@ -65,17 +69,35 @@ export default (
             return {
                 ...state,
                 isLoading: false,
-                event: LOGOUT_EVENT
+                event: VERIFY_EVENT
             };
         case VERIFY_EVENT_SUCCESS:
-            return {
-                ...state,
-                isLoading: false,
-                isAuthenticated: action.payload.isAuthenticated,
-                user: mapToUserState(action.payload.userInfo),
-                event: LOGOUT_EVENT
-            };
+            if (action.payload && action.payload.uid) {
+                addTokenToHttpHeader(action.payload);
+                return {
+                    ...state,
+                    isLoading: false,
+                    isAuthenticated: true,
+                    user: mapToUserState(action.payload),
+                    event: VERIFY_EVENT_SUCCESS
+                };
+            } else {
+                return {
+                    ...state,
+                    isLoading: false,
+                    isAuthenticated: false,
+                    event: VERIFY_EVENT
+                };
+            }
         default:
             return authState;
     }
 };
+
+function addTokenToHttpHeader(payload: User) {
+    payload.getIdToken().then(token => {
+        addToken(token);
+    }).catch(err => {
+        console.error('Please clear cache and try again');
+    });
+}

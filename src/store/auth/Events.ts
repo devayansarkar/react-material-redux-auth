@@ -1,4 +1,4 @@
-import { FirebaseError, UserInfo } from 'firebase/app';
+import { FirebaseError, User } from 'firebase/app';
 
 export const LOGIN_EVENT = 'LOGIN_EVENT';
 export const LOGIN_EVENT_SUCCESS = 'LOGIN_EVENT_SUCCESS';
@@ -19,7 +19,7 @@ export type AuthenticationEventTypes =
     'LOGOUT_EVENT_SUCCESS' |
     'LOGOUT_EVENT_FAILURE' |
     'VERIFY_REQUEST' |
-    'VERIFY_EVENT' | '';
+    'VERIFY_SUCCESS' | '';
 
 export interface LoginEvent {
     type: typeof LOGIN_EVENT;
@@ -27,7 +27,7 @@ export interface LoginEvent {
 
 export interface LoginEventSuccess {
     type: typeof LOGIN_EVENT_SUCCESS;
-    payload: UserInfo;
+    payload: User
 }
 
 export interface LoginEventFailure {
@@ -52,7 +52,7 @@ export interface VerifyEvent {
 
 export interface VerifyEventSuccess {
     type: typeof VERIFY_EVENT_SUCCESS;
-    payload: any
+    payload: User
 }
 export type AuthenticationActionTypes =
     LoginEvent | LoginEventSuccess | LoginEventFailure |
