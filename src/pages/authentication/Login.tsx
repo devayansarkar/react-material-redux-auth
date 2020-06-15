@@ -30,10 +30,12 @@ class Login extends Component<ILoginPageProps> {
 
     constructor(props: ILoginPageProps) {
         super(props)
-        console.log(this.props.authentication)
         this.checkSignInStatus(props.authentication, props.history)
     }
 
+    componentDidUpdate(props: ILoginPageProps) {
+        if (props.authentication.isAuthenticated) props.history.push('/')
+    }
     checkSignInStatus(authentication: IUserState, history: any) {
         if (authentication.isAuthenticated) history.push('/')
         if (authentication.err && authentication.err.message) this.setState({
